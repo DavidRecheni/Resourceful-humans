@@ -1,18 +1,32 @@
-import { useRef, useCallback, useEffect, useState } from 'react'
-import ForceGraph3D from 'react-force-graph-3d'
-import { FiCheck } from 'react-icons/fi';
+import { useRef, useCallback, useEffect, useState, Suspense } from 'react'
+import Modal from 'react-modal';
 
+// libs
+import ForceGraph3D from 'react-force-graph-3d'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
+
+// components
+import { ContainerInput } from './styled/ContainerInput'
+
+// icons
+import { FiCheck } from 'react-icons/fi';
+import { IoAddCircle } from 'react-icons/io5'
 
 export default function Main({ service }) {
 
     const [data, setData] = useState()
 
-    // I need to keep the original node to find and reeplace after save
+    // Store the original node to search and reeplace after changes
     const [selectedNode, setSelectedNode] = useState()
     const [modifiedNode, setModifiedNode] = useState()
 
+    // if was modified
     const [showCheck, setShowCheck] = useState(false)
 
+    // Aux
+    const [addHover, setAddHover] = useState(false)
+    const [addHoverStyles, setAddHoverStyles] = useState({})
+    const [addModal, setAddModal] = useState(false)
     const fgRef = useRef()
 
     const handleNameInput = name => {
@@ -37,36 +51,74 @@ export default function Main({ service }) {
     }, [fgRef])
 
     const updateNodes = (node, data) => {
-        console.log('data', node.index, data.nodes)
         const nodes = data.nodes
         nodes[node.index] = node
-        console.log('nodes', nodes)
         setData({ ...data, nodes: nodes })
     }
 
-    useEffect((node, data) => {
+    useEffect(() => {
         service.getData(setData)
     }, [service])
 
+    // Bloom effect
+    useEffect(() => {
+        const bloomPass = new UnrealBloomPass();
+        bloomPass.strength = 1;
+        bloomPass.radius = 1;
+        bloomPass.threshold = 0.1;
+        fgRef.current.postProcessingComposer().addPass(bloomPass);
+    }, []);
+
+
+    useEffect(() => {
+
+        setAddHoverStyles(addHover ? {
+            color: 'cyan'
+        } :
+            {})
+    }, [addHover])
+
     return (
-        <div>
-            {data &&
-                <ForceGraph3D
-                    ref={fgRef}
-                    graphData={data}
-                    nodeLabel="id"
-                    nodeAutoColorBy="group"
-                    onNodeClick={handleClick}
-                />}
-            {selectedNode && <div style={{ position: 'fixed', bottom: 20, width: '100vw', zIndex: 1, display: 'flex', justifyContent: 'center' }}>
-                <input
-                    value={selectedNode.id}
-                    style={{ color: 'white', background: 'none' }}
-                    onChange={handleNameInput}
+        <Suspense fallback={<h1>Loading..</h1>}>
+            <ForceGraph3D
+                ref={fgRef}
+                graphData={data}
+                nodeLabel="id"
+                nodeAutoColorBy="group"
+                onNodeClick={handleClick}
+            />
+            {selectedNode &&
+                <ContainerInput bottom hCenter>
+                    <input
+                        value={selectedNode.id}
+                        style={{ color: 'white', background: 'none' }}
+                        onChange={handleNameInput}
+                    />
+                    {showCheck &&
+                        <FiCheck
+                            style={{ color: 'cyan', fontSize: '1.4em', marginLeft: 10, fontWeight: 'bolder' }}
+                            onClick={() => updateNodes(selectedNode, data)} />}
+                </ContainerInput>}
+
+            <ContainerInput bottom right>
+                < IoAddCircle
+                    onMouseEnter={_ => setAddHover(true)}
+                    onMouseLeave={_ => setAddHover(false)}
+                    style={{ color: 'white', fontSize: '2em', ...addHoverStyles }}
+                    onClick={_ => setAddModal(true)}
                 />
-                {showCheck && <FiCheck style={{ color: 'cyan', fontSize: '1.4em', marginLeft: 10, fontWeight: 'bolder' }}
-                    onClick={() => updateNodes(selectedNode, data)} />}
-            </div>}
-        </div>
+            </ContainerInput>
+
+
+            {/* Add element modal */}
+            <Modal
+                isOpen={addModal}
+                // onAfterOpen={afterOpenModal}
+                onRequestClose={_ => setAddModal(false)}
+                contentLabel="Add element modal"
+            >
+                <h2>Add element</h2>
+            </Modal>
+        </Suspense>
     )
 }
