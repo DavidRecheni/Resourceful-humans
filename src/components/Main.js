@@ -7,10 +7,13 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 
 // components
 import { ContainerInput } from './styled/ContainerInput'
+import { ContainerColumn } from './styled/ContainerColumn'
+import Icon from './styled/Icon'
 
 // icons
-import { FiCheck } from 'react-icons/fi';
+import { FaSave } from 'react-icons/fa'
 import { IoAddCircle } from 'react-icons/io5'
+import { IoIosRefreshCircle } from 'react-icons/io'
 
 export default function Main({ service }) {
 
@@ -20,18 +23,13 @@ export default function Main({ service }) {
     const [selectedNode, setSelectedNode] = useState()
     const [modifiedNode, setModifiedNode] = useState()
 
-    // if was modified
-    const [showCheck, setShowCheck] = useState(false)
-
     // Aux
-    const [addHover, setAddHover] = useState(false)
-    const [addHoverStyles, setAddHoverStyles] = useState({})
-    const [addModal, setAddModal] = useState(false)
+    const [showAdd, setShowAdd] = useState(false)
+
     const fgRef = useRef()
 
     const handleNameInput = name => {
         setModifiedNode({ ...modifiedNode, id: name.target.value })
-        setShowCheck(true)
     }
 
     const handleClick = useCallback(node => {
@@ -47,7 +45,6 @@ export default function Main({ service }) {
 
         setSelectedNode(node)
         setModifiedNode(node)
-        setShowCheck(false)
     }, [fgRef])
 
     const updateNodes = (node, data) => {
@@ -60,7 +57,7 @@ export default function Main({ service }) {
         service.getData(setData)
     }, [service])
 
-    // Bloom effect
+    // Bloom effect -------------------------------------
     useEffect(() => {
         const bloomPass = new UnrealBloomPass();
         bloomPass.strength = 1;
@@ -68,15 +65,6 @@ export default function Main({ service }) {
         bloomPass.threshold = 0.1;
         fgRef.current.postProcessingComposer().addPass(bloomPass);
     }, []);
-
-
-    useEffect(() => {
-
-        setAddHoverStyles(addHover ? {
-            color: 'cyan'
-        } :
-            {})
-    }, [addHover])
 
     return (
         <Suspense fallback={<h1>Loading..</h1>}>
@@ -90,31 +78,30 @@ export default function Main({ service }) {
             {selectedNode &&
                 <ContainerInput bottom hCenter>
                     <input
-                        value={selectedNode.id}
+                        value={modifiedNode?.id}
                         style={{ color: 'white', background: 'none' }}
                         onChange={handleNameInput}
                     />
-                    {showCheck &&
-                        <FiCheck
-                            style={{ color: 'cyan', fontSize: '1.4em', marginLeft: 10, fontWeight: 'bolder' }}
-                            onClick={() => updateNodes(selectedNode, data)} />}
+
+                    <Icon component={FaSave} />
                 </ContainerInput>}
 
             <ContainerInput bottom right>
-                < IoAddCircle
-                    onMouseEnter={_ => setAddHover(true)}
-                    onMouseLeave={_ => setAddHover(false)}
-                    style={{ color: 'white', fontSize: '2em', ...addHoverStyles }}
-                    onClick={_ => setAddModal(true)}
-                />
-            </ContainerInput>
+                <ContainerColumn>
+                    <Icon component={IoIosRefreshCircle}
+                        onClick={() => updateNodes(selectedNode, data)}
+                    />
 
+                    < Icon component={IoAddCircle}
+                        onClick={_ => setShowAdd(true)}
+                    />
+                </ContainerColumn>
+            </ContainerInput>
 
             {/* Add element modal */}
             <Modal
-                isOpen={addModal}
-                // onAfterOpen={afterOpenModal}
-                onRequestClose={_ => setAddModal(false)}
+                isOpen={showAdd}
+                onRequestClose={_ => setShowAdd(false)}
                 contentLabel="Add element modal"
             >
                 <h2>Add element</h2>

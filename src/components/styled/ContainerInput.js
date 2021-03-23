@@ -12,7 +12,7 @@ transform: translate(-50%, -50%);
 `}
 
 ${props => props.bottom && css`
-   bottom: 20px;
+  bottom: 20px;
 `}
 
 ${props => props.right && css`
@@ -20,11 +20,11 @@ ${props => props.right && css`
 `}
 
 ${props => props.left && css`
- left: 20px;
+  left: 20px;
 `}
 
 ${props => props.top && css`
-right: 20px;
+  top: 20px;
 `}
   
 `
