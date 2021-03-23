@@ -2,7 +2,8 @@ import styled, { css } from 'styled-components'
 
 export const ContainerInput = styled.div`
 
-position: fixed;
+display: flex;
+position: absolute;
 z-index: 1;
 
 ${props => props.hCenter && css`

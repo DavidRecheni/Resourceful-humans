@@ -1,5 +1,4 @@
 import { useRef, useCallback, useEffect, useState, Suspense } from 'react'
-import Modal from 'react-modal';
 
 // libs
 import ForceGraph3D from 'react-force-graph-3d'
@@ -8,11 +7,11 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 // components
 import { ContainerInput } from './styled/ContainerInput'
 import { ContainerColumn } from './styled/ContainerColumn'
+import AddElement from './AddElement'
 import Icon from './styled/Icon'
 
 // icons
 import { FaSave } from 'react-icons/fa'
-import { IoAddCircle } from 'react-icons/io5'
 import { IoIosRefreshCircle } from 'react-icons/io'
 
 export default function Main({ service }) {
@@ -20,12 +19,10 @@ export default function Main({ service }) {
     const [data, setData] = useState()
 
     // Store the original node to search and reeplace after changes
-    const [selectedNode, setSelectedNode] = useState()
-    const [modifiedNode, setModifiedNode] = useState()
+    const [selectedNode, setSelectedNode] = useState({ id: '' })
+    const [modifiedNode, setModifiedNode] = useState({ id: '' })
 
     // Aux
-    const [showAdd, setShowAdd] = useState(false)
-
     const fgRef = useRef()
 
     const handleNameInput = name => {
@@ -53,6 +50,10 @@ export default function Main({ service }) {
         setData({ ...data, nodes: nodes })
     }
 
+    const updateName = (name) => {
+
+    }
+
     useEffect(() => {
         service.getData(setData)
     }, [service])
@@ -75,7 +76,7 @@ export default function Main({ service }) {
                 nodeAutoColorBy="group"
                 onNodeClick={handleClick}
             />
-            {selectedNode &&
+            {selectedNode.id &&
                 <ContainerInput bottom hCenter>
                     <input
                         value={modifiedNode?.id}
@@ -83,29 +84,25 @@ export default function Main({ service }) {
                         onChange={handleNameInput}
                     />
 
-                    <Icon component={FaSave} />
+                    <Icon
+                        tooltip="Save changes"
+                        component={FaSave}
+                        onClick={updateName}
+                        style={{ marginLeft: 10, display: selectedNode.id === modifiedNode.id ? 'none' : 'flex' }}
+                    />
                 </ContainerInput>}
 
-            <ContainerInput bottom right>
+            <ContainerInput bottom left>
                 <ContainerColumn>
-                    <Icon component={IoIosRefreshCircle}
+                    <Icon
+                        tooltip="Re-create graph"
+                        component={IoIosRefreshCircle}
                         onClick={() => updateNodes(selectedNode, data)}
                     />
+                    <AddElement />
 
-                    < Icon component={IoAddCircle}
-                        onClick={_ => setShowAdd(true)}
-                    />
                 </ContainerColumn>
             </ContainerInput>
-
-            {/* Add element modal */}
-            <Modal
-                isOpen={showAdd}
-                onRequestClose={_ => setShowAdd(false)}
-                contentLabel="Add element modal"
-            >
-                <h2>Add element</h2>
-            </Modal>
         </Suspense>
     )
 }

@@ -1,8 +1,10 @@
 export default class SWAPI {
 
-    constructor(apiUrl) { 
+    constructor(apiUrl) {
         this.url = apiUrl
+        this.cache = {}
     }
+
 
     getData(setter) {
         const formatData = (unformatedData) => {
@@ -47,14 +49,16 @@ export default class SWAPI {
             }
         }
 
-        fetch(this.url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: `{
+        if (!this.cache.nodes) {
+            console.log('Cache empty, Fetching data')
+            fetch(this.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `{
                         allFilms {
                           films {
                             title
@@ -71,10 +75,18 @@ export default class SWAPI {
                           }
                         }
                       }`
+                })
             })
-        })
-            .then(r => r.json())
-            .then(r => { setter(formatData(r.data)) })
+                .then(r => r.json())
+                .then(r => {
+                    const data = formatData(r.data)
+                    setter(data)
+                    this.cache = data
+                })
+        } else {
+            console.log('Response from cache!')
+            setter(this.cache)
+        }
     }
 
 }
