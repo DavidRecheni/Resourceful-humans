@@ -16,17 +16,19 @@ import { IoIosRefreshCircle } from 'react-icons/io'
 
 export default function Main({ service }) {
 
+    // Data
     const [data, setData] = useState()
-
-    // Store the original node to search and reeplace after changes
-    const [selectedNode, setSelectedNode] = useState({ id: '' })
-    const [modifiedNode, setModifiedNode] = useState({ id: '' })
+    const [pendingChanges, setPendingChanges] = useState({ nodes: [], links: [], replace: [] })
 
     // Aux
+    // Store the original node to search and reeplace after changes
+    const [nodeToModify, setNodeToModify] = useState({ oldId: '', newId: '' })
+
     const fgRef = useRef()
 
+    // Functions --------------------------------------------------------------------------------
     const handleNameInput = name => {
-        setModifiedNode({ ...modifiedNode, id: name.target.value })
+        setNodeToModify(nodes => { return { ...nodes, newId: name.target.value } })
     }
 
     const handleClick = useCallback(node => {
@@ -40,8 +42,7 @@ export default function Main({ service }) {
             3000  // ms transition duration
         );
 
-        setSelectedNode(node)
-        setModifiedNode(node)
+        setNodeToModify(nodes => { return { newId: node.id, oldId: node.id } })
     }, [fgRef])
 
     const updateNodes = (node, data) => {
@@ -50,9 +51,11 @@ export default function Main({ service }) {
         setData({ ...data, nodes: nodes })
     }
 
-    const updateName = (name) => {
-
+    const updateName = node => {
+        setPendingChanges(pending => { return { ...pending, replace: [...pending.replace, node] } })
     }
+
+    // Hooks -----------------------------------------------------------------------------------
 
     useEffect(() => {
         service.getData(setData)
@@ -76,10 +79,10 @@ export default function Main({ service }) {
                 nodeAutoColorBy="group"
                 onNodeClick={handleClick}
             />
-            {selectedNode.id &&
+            {nodeToModify.oldId &&
                 <ContainerInput bottom hCenter>
                     <input
-                        value={modifiedNode?.id}
+                        value={nodeToModify.newId}
                         style={{ color: 'white', background: 'none' }}
                         onChange={handleNameInput}
                     />
@@ -87,20 +90,21 @@ export default function Main({ service }) {
                     <Icon
                         tooltip="Save changes"
                         component={FaSave}
-                        onClick={updateName}
-                        style={{ marginLeft: 10, display: selectedNode.id === modifiedNode.id ? 'none' : 'flex' }}
+                        onClick={_ => updateName(nodeToModify)}
+                        style={{ marginLeft: 10, display: nodeToModify.oldId === nodeToModify.newId ? 'none' : 'flex' }}
                     />
                 </ContainerInput>}
 
             <ContainerInput bottom left>
                 <ContainerColumn>
                     <Icon
+                        style={{ marginBottom: 10 }}
                         tooltip="Re-create graph"
                         component={IoIosRefreshCircle}
-                        onClick={() => updateNodes(selectedNode, data)}
+                        onClick={() => updateNodes()}
                     />
-                    <AddElement />
 
+                    <AddElement setPendingChanges={setPendingChanges} />
                 </ContainerColumn>
             </ContainerInput>
         </Suspense>

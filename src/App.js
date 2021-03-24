@@ -1,8 +1,9 @@
 import SWAPI from './services/SWAPI'
 import Main from './components/Main'
-function App() {
 
-  const swapi = new SWAPI('http://localhost:1338/')
+const swapi = new SWAPI('http://localhost:1338/')
+
+function App() {
 
   return (
     <div className="App">
