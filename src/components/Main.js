@@ -8,11 +8,8 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ContainerInput } from './styled/ContainerInput'
 import { ContainerColumn } from './styled/ContainerColumn'
 import AddElement from './AddElement'
-import Icon from './styled/Icon'
-
-// icons
-import { FaSave } from 'react-icons/fa'
-import { IoIosRefreshCircle } from 'react-icons/io'
+import ModifyName from './ModifyName'
+import RefreshGraph from './RefreshGraph'
 
 export default function Main({ service }) {
 
@@ -26,7 +23,7 @@ export default function Main({ service }) {
 
     const fgRef = useRef()
 
-    // Functions --------------------------------------------------------------------------------
+    // Handlers --------------------------------------------------------------------------------
     const handleNameInput = name => {
         setNodeToModify(nodes => { return { ...nodes, newId: name.target.value } })
     }
@@ -42,18 +39,8 @@ export default function Main({ service }) {
             3000  // ms transition duration
         );
 
-        setNodeToModify(nodes => { return { newId: node.id, oldId: node.id } })
+        setNodeToModify({ newId: node.id, oldId: node.id })
     }, [fgRef])
-
-    const updateNodes = (node, data) => {
-        const nodes = data.nodes
-        nodes[node.index] = node
-        setData({ ...data, nodes: nodes })
-    }
-
-    const updateName = node => {
-        setPendingChanges(pending => { return { ...pending, replace: [...pending.replace, node] } })
-    }
 
     // Hooks -----------------------------------------------------------------------------------
 
@@ -70,6 +57,10 @@ export default function Main({ service }) {
         fgRef.current.postProcessingComposer().addPass(bloomPass);
     }, []);
 
+    useEffect(() => {
+        if (nodeToModify.oldId) setNodeToModify({ oldId: '', newId: '' })
+    }, [pendingChanges])
+
     return (
         <Suspense fallback={<h1>Loading..</h1>}>
             <ForceGraph3D
@@ -79,31 +70,18 @@ export default function Main({ service }) {
                 nodeAutoColorBy="group"
                 onNodeClick={handleClick}
             />
-            {nodeToModify.oldId &&
-                <ContainerInput bottom hCenter>
-                    <input
-                        value={nodeToModify.newId}
-                        style={{ color: 'white', background: 'none' }}
-                        onChange={handleNameInput}
-                    />
 
-                    <Icon
-                        tooltip="Save changes"
-                        component={FaSave}
-                        onClick={_ => updateName(nodeToModify)}
-                        style={{ marginLeft: 10, display: nodeToModify.oldId === nodeToModify.newId ? 'none' : 'flex' }}
-                    />
-                </ContainerInput>}
+            <ContainerInput bottom hCenter>
+                <ModifyName
+                    node={nodeToModify}
+                    inputHandler={handleNameInput}
+                    setter={setPendingChanges}
+                />
+            </ContainerInput>
 
             <ContainerInput bottom left>
                 <ContainerColumn>
-                    <Icon
-                        style={{ marginBottom: 10 }}
-                        tooltip="Re-create graph"
-                        component={IoIosRefreshCircle}
-                        onClick={() => updateNodes()}
-                    />
-
+                    <RefreshGraph service={service} pendingChanges={pendingChanges} dataSetter={setData} />
                     <AddElement setPendingChanges={setPendingChanges} />
                 </ContainerColumn>
             </ContainerInput>
