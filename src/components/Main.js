@@ -57,10 +57,6 @@ export default function Main({ service }) {
         fgRef.current.postProcessingComposer().addPass(bloomPass);
     }, []);
 
-    useEffect(() => {
-        if (nodeToModify.oldId) setNodeToModify({ oldId: '', newId: '' })
-    }, [pendingChanges])
-
     return (
         <Suspense fallback={<h1>Loading..</h1>}>
             <ForceGraph3D
