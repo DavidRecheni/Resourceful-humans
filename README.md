@@ -26,6 +26,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 --Display ammount of changes to be saved
 
+-- Dropdowns for planet links instead of inputs
+
 --Improve input containers UI
 
 --Don't allow to re-create the graph if there's no changes
+
+--Stars background
+
+--Planets textures
