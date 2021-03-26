@@ -4,7 +4,7 @@
 
 ## Scripts
   
-###   `yarn api` : Runs the backend GraphQL API
+###   `yarn api` : Runs the backend GraphQL API ( In case the heroku backend is not live )
 Default port: 1338
 ( Remember to install modules on back-end!)
   

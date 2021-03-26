@@ -6,7 +6,6 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "concurrently": "^6.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-force-graph-3d": "^1.21.0",
@@ -17,7 +16,7 @@
     "api": "cd API && yarn start",
     "start": "react-scripts start",
     "dev": "concurrently  \"yarn start\"  \"yarn api\"",
-    "build": "concurrently \"react-scripts build\"  \"yarn api\"",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -40,8 +39,8 @@
     ]
   },
   "devDependencies": {
-    "react-icons": "^4.2.0",
+    "styled-components": "^5.2.1",
     "react-tooltip": "^4.2.15",
-    "styled-components": "^5.2.1"
+    "react-icons": "^4.2.0"
   }
 }

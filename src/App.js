@@ -1,7 +1,7 @@
 import SWAPI from './services/SWAPI'
 import Main from './components/Main'
 
-const swapi = new SWAPI('http://localhost:1338/')
+const swapi = new SWAPI('https://swapi-graphql-dave.herokuapp.com/')
 
 function App() {
 
