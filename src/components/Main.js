@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect, useState, Suspense } from 'react'
+import { useRef, useCallback, useEffect, useState, Suspense, useReducer } from 'react'
 
 // libs
 import ForceGraph3D from 'react-force-graph-3d'
@@ -11,6 +11,29 @@ import AddElement from './AddElement'
 import ModifyName from './ModifyName'
 import RefreshGraph from './RefreshGraph'
 
+
+const NTMInit = { nodes: [], links: [] }
+
+function NTMReducer(state, action) {
+    switch (action.type) {
+
+        case 'NEW_NAME':
+            return { ...state, newId: action.payload };
+
+        case 'SET_NODE':
+            return { oldId: action.payload, newId: action.payload };
+
+        case 'ADD_PLANET':
+            return { ...state, nodes: [{ id: action.payload, group: 2 }] };
+
+        case 'RESET':
+            return NTMInit
+
+        default:
+            throw new Error();
+    }
+}
+
 export default function Main({ service }) {
 
     // Data
@@ -18,14 +41,14 @@ export default function Main({ service }) {
     const [pendingChanges, setPendingChanges] = useState({ nodes: [], links: [], replace: [] })
 
     // Aux
-    // Store the original node to search and reeplace after changes
-    const [nodeToModify, setNodeToModify] = useState({ oldId: '', newId: '' })
+    const [nodeToModify, dispatchNodeToModify] = useReducer(NTMReducer, NTMInit);
+
 
     const fgRef = useRef()
 
     // Handlers --------------------------------------------------------------------------------
     const handleNameInput = name => {
-        setNodeToModify(nodes => { return { ...nodes, newId: name.target.value } })
+        dispatchNodeToModify({ type: 'NEW_NAME', payload: name.target.value })
     }
 
     const handleClick = useCallback(node => {
@@ -39,7 +62,7 @@ export default function Main({ service }) {
             3000  // ms transition duration
         );
 
-        setNodeToModify({ newId: node.id, oldId: node.id })
+        dispatchNodeToModify({ type: 'SET_NODE', payload: node.id })
     }, [fgRef])
 
     // Hooks -----------------------------------------------------------------------------------
@@ -69,9 +92,10 @@ export default function Main({ service }) {
 
             <ContainerInput bottom hCenter>
                 <ModifyName
-                    node={nodeToModify}
+                    node={[nodeToModify, dispatchNodeToModify]}
                     inputHandler={handleNameInput}
                     setter={setPendingChanges}
+
                 />
             </ContainerInput>
 

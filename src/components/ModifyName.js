@@ -6,15 +6,16 @@ import Icon from './styled/Icon'
 export default function ModifyName({ node, inputHandler, setter }) {
 
     const updateName = node => {
-        setter(pending => { return { ...pending, replace: [...pending.replace, node] } })
+        setter(pending => { return { ...pending, replace: [...pending.replace, node[0]] } })
+        node[1]({type: 'RESET'})
     }
 
     return (
         <>
-            {node.oldId &&
+            {node[0].oldId &&
                 <>
                     <input
-                        value={node.newId}
+                        value={node[0].newId}
                         style={{ color: 'white', background: 'none' }}
                         onChange={inputHandler}
                     />
@@ -23,7 +24,7 @@ export default function ModifyName({ node, inputHandler, setter }) {
                         tooltip="Save changes"
                         component={FaSave}
                         onClick={_ => updateName(node)}
-                        style={{ marginLeft: 10, display: node.oldId === node.newId ? 'none' : 'flex' }}
+                        style={{ marginLeft: 10, display: node[0].oldId === node[0].newId ? 'none' : 'flex' }}
                     />
                 </>
             }

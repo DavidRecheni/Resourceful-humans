@@ -1,5 +1,5 @@
 {
-  "name": "rh",
+  "name": "sw-fg",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -15,7 +15,6 @@
   "scripts": {
     "api": "cd API && yarn start",
     "start": "react-scripts start",
-    "dev": "concurrently  \"yarn start\"  \"yarn api\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
