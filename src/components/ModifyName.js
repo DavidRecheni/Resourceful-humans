@@ -3,11 +3,16 @@ import { FaSave } from 'react-icons/fa'
 import Icon from './styled/Icon'
 
 
-export default function ModifyName({ node, inputHandler, setter }) {
+export default function ModifyName({ node, setter, dispatchNTM }) {
+
+    // Handlers --------------------------------------------------------------------------------
+    const inputHandler = name => {
+        dispatchNTM({ type: 'NEW_NAME', payload: name.target.value })
+    }
 
     const updateName = node => {
         setter(pending => { return { ...pending, replace: [...pending.replace, node[0]] } })
-        node[1]({type: 'RESET'})
+        node[1]({ type: 'RESET' })
     }
 
     return (

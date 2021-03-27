@@ -1,8 +1,4 @@
-import { useRef, useCallback, useEffect, useState, Suspense, useReducer } from 'react'
-
-// libs
-import ForceGraph3D from 'react-force-graph-3d'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
+import { useEffect, useState, Suspense, useReducer } from 'react'
 
 // components
 import { ContainerInput } from './styled/ContainerInput'
@@ -10,7 +6,7 @@ import { ContainerColumn } from './styled/ContainerColumn'
 import AddElement from './AddElement'
 import ModifyName from './ModifyName'
 import RefreshGraph from './RefreshGraph'
-
+import Graph from './Graph'
 
 const NTMInit = { nodes: [], links: [] }
 
@@ -43,28 +39,6 @@ export default function Main({ service }) {
     // Aux
     const [nodeToModify, dispatchNodeToModify] = useReducer(NTMReducer, NTMInit);
 
-
-    const fgRef = useRef()
-
-    // Handlers --------------------------------------------------------------------------------
-    const handleNameInput = name => {
-        dispatchNodeToModify({ type: 'NEW_NAME', payload: name.target.value })
-    }
-
-    const handleClick = useCallback(node => {
-        // Aim at node from outside it
-        const distance = 40;
-        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-
-        fgRef.current.cameraPosition(
-            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
-            node, // lookAt ({x, y, z})
-            3000  // ms transition duration
-        );
-
-        dispatchNodeToModify({ type: 'SET_NODE', payload: node.id })
-    }, [fgRef])
-
     // Hooks -----------------------------------------------------------------------------------
 
     useEffect(() => {
@@ -72,30 +46,18 @@ export default function Main({ service }) {
     }, [service])
 
     // Bloom effect -------------------------------------
-    useEffect(() => {
-        const bloomPass = new UnrealBloomPass();
-        bloomPass.strength = 1;
-        bloomPass.radius = 1;
-        bloomPass.threshold = 0.1;
-        fgRef.current.postProcessingComposer().addPass(bloomPass);
-    }, []);
+
 
     return (
         <Suspense fallback={<h1>Loading..</h1>}>
-            <ForceGraph3D
-                ref={fgRef}
-                graphData={data}
-                nodeLabel="id"
-                nodeAutoColorBy="group"
-                onNodeClick={handleClick}
-            />
+
+            <Graph data={data} dispatchNTM={dispatchNodeToModify} />
 
             <ContainerInput bottom hCenter>
                 <ModifyName
                     node={[nodeToModify, dispatchNodeToModify]}
-                    inputHandler={handleNameInput}
+                    dispatchNTM={dispatchNodeToModify}
                     setter={setPendingChanges}
-
                 />
             </ContainerInput>
 
@@ -105,6 +67,7 @@ export default function Main({ service }) {
                     <AddElement setPendingChanges={setPendingChanges} />
                 </ContainerColumn>
             </ContainerInput>
+            
         </Suspense>
     )
 }
