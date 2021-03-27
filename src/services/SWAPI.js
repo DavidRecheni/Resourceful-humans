@@ -92,14 +92,29 @@ export default class SWAPI {
 
     updateNodes(pendingNodes, data) {
         if (pendingNodes.replace.length) {
-            const replaceNodesIndex = pendingNodes.replace.map(n => {
+
+            let allNodes = data.nodes
+
+            let newNodes = pendingNodes.replace.map(n => {
                 return { ...n, index: data.nodes.findIndex(e => e.id === n.oldId) }
+            }).map(n => {
+                console.log('before', allNodes[n.index])
+                allNodes[n.index] = { ...allNodes[n.index], id: n.newId }
+                return allNodes[n.index]
             })
-            let modifiedNodes = data.nodes
-            replaceNodesIndex.forEach(n => {
-                modifiedNodes[n.index] = { ...modifiedNodes[n.index], id: n.newId }
+
+            let modifiedLinks = data.links.map(link => {
+                pendingNodes.replace.forEach((pn, i) => {
+                    if (pn.oldId === link.source.id) {
+                        link.source = newNodes[i]
+                    } else if (pn.oldId === link.target.id) {
+                        link.target = newNodes[i]
+                    }
+                })
+                return link
             })
-            return { nodes: [...modifiedNodes, ...pendingNodes.nodes], links: [...data.links, ...pendingNodes.links] }
+
+            return { nodes: [...allNodes, ...pendingNodes.nodes], links: [...modifiedLinks, ...pendingNodes.links] }
 
         } else return { nodes: [...data.nodes, ...pendingNodes.nodes], links: [...data.links, ...pendingNodes.links] }
     }
