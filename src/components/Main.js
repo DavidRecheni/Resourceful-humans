@@ -63,11 +63,11 @@ export default function Main({ service }) {
 
             <ContainerInput bottom left>
                 <ContainerColumn>
-                    <RefreshGraph service={service} pendingChanges={pendingChanges} dataSetter={setData} />
+                    <RefreshGraph service={service} pendingChanges={[pendingChanges, setPendingChanges]} dataSetter={setData} />
                     <AddElement setPendingChanges={setPendingChanges} />
                 </ContainerColumn>
             </ContainerInput>
-            
+
         </Suspense>
     )
 }

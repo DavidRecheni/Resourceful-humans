@@ -72,7 +72,6 @@ export default function AddElement({ setPendingChanges }) {
     const [inputValue, setInputValue] = useState('')
     const [inputValue2, setInputValue2] = useState('')
 
-    // const [toSave, setToSave] = useState({ nodes: [], links: [] })
     const [pendingElements, dispatchPendingElements] = useReducer(PEReducer, PEInit);
 
     const SelectOption = (option) => {

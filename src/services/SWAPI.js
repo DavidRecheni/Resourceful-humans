@@ -98,7 +98,6 @@ export default class SWAPI {
             let newNodes = pendingNodes.replace.map(n => {
                 return { ...n, index: data.nodes.findIndex(e => e.id === n.oldId) }
             }).map(n => {
-                console.log('before', allNodes[n.index])
                 allNodes[n.index] = { ...allNodes[n.index], id: n.newId }
                 return allNodes[n.index]
             })
