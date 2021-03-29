@@ -1,13 +1,8 @@
 
 # Star Wars force-graph
 
-
 ## Scripts
-  
-###   `yarn api` : Runs the backend GraphQL API ( In case the heroku backend is not live )
-Default port: 1338
-( Remember to install modules on back-end!)
-  
+
 ### `yarn start` : Starts development server
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
