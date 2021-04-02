@@ -24,7 +24,7 @@ export default class SWAPI {
                 // Compare every planet with each other and push the links into links arr, except for the ones that already exist
                 islatedPlanets.forEach(p => {
                     islatedPlanets.forEach(p2 => {
-                        if (p !== p2 && !links.find(e => { return e.source === p2.name && e.target === p.name })) {
+                        if (p !== p2) {
                             links.push({ source: p.name, target: p2.name })
                         }
                     })
