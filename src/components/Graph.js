@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 // libs
 import ForceGraph3D from 'react-force-graph-3d'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
@@ -18,7 +18,7 @@ export default function Graph({ data, dispatchNTM }) {
             node, // lookAt ({x, y, z})
             3000  // ms transition duration
         );
-        dispatchNTM({ type: 'SET_NODE', payload: node.id })
+        dispatchNTM({ type: 'SET_NODE', payload: node })
     }, [fgRef, dispatchNTM])
 
     useEffect(() => {

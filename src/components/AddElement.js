@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react'
+import { useState, useReducer, useEffect } from 'react'
 import styled from 'styled-components'
 
 import Icon from './styled/Icon'
@@ -12,7 +12,7 @@ const OpenButton = styled.div`
     z-index: 2;
 `
 const NavOption = styled.div`
-    bottom: -15px;
+    bottom: -5px;
     position: absolute;
     z-index: 1;
     transition: all 150ms ease-out;
@@ -24,6 +24,11 @@ const ContainerInput = styled.div`
     bottom: 45px;
     left: 50px;
     display: flex;
+`
+
+const ContainerButtons = styled.div`
+    position: absolute;
+    left: 55px;
 `
 
 const OPTIONS = {
@@ -89,6 +94,7 @@ export default function AddElement({ setPendingChanges }) {
                         onChange={e => setInputValue2(e.target.value)}
                     />
                     <Icon
+
                         tooltip="Add link"
                         component={FaSave}
                         onClick={_ => {
@@ -96,7 +102,8 @@ export default function AddElement({ setPendingChanges }) {
                             setInputValue('')
                             setInputValue2('')
                         }}
-                        style={{ marginLeft: 10, display: inputValue !== '' && inputValue2 !== '' ? 'flex' : 'none' }}
+
+                        style={{ display: inputValue !== '' && inputValue2 !== '' ? 'flex' : 'none' }}
                     />
                 </>;
 
@@ -114,7 +121,7 @@ export default function AddElement({ setPendingChanges }) {
                             dispatchPendingElements({ type: 'ADD_PLANET', payload: inputValue })
                             setInputValue('')
                         }}
-                        style={{ marginLeft: 10, display: inputValue !== '' ? 'flex' : 'none' }}
+                        style={{ display: inputValue !== '' ? 'flex' : 'none' }}
                     />
                 </>;
 
@@ -132,7 +139,7 @@ export default function AddElement({ setPendingChanges }) {
                             dispatchPendingElements({ type: 'ADD_FILM', payload: inputValue })
                             setInputValue('')
                         }}
-                        style={{ marginLeft: 10, display: inputValue !== '' ? 'flex' : 'none' }}
+                        style={{ display: inputValue !== '' ? 'flex' : 'none' }}
                     />
                 </>;
 
@@ -155,21 +162,25 @@ export default function AddElement({ setPendingChanges }) {
                 setShowOptions(!showOptions)
             }}>
                 <Icon
+                    large
                     active={showOptions}
                     component={IoAddCircle}
                 />
             </OpenButton>
 
-            { menuItems.map((e, i) =>
-                <NavOption
-                    key={i}
-                    style={{ marginLeft: showOptions ? (i + 1) * 50 : 0 }}>
-                    <Icon tooltip={e.tooltip}
-                        active={selectedOption === e.option}
-                        onClick={_ => setSelectedOption(e.option)}
-                        style={{ opacity: showOptions ? 1 : 0 }}
-                        component={e.component} />,
+            <ContainerButtons>
+                {menuItems.map((e, i) =>
+                    <NavOption
+                        key={i}
+                        style={{ marginLeft: showOptions ? (i) * 35 : 0 }}>
+                        <Icon tooltip={e.tooltip}
+                            active={selectedOption === e.option}
+                            onClick={_ => setSelectedOption(e.option)}
+                            style={{ opacity: showOptions ? 1 : 0 }}
+                            component={e.component} />,
                 </NavOption>)}
+            </ContainerButtons>
+
 
             {selectedOption && showOptions &&
                 <ContainerInput>

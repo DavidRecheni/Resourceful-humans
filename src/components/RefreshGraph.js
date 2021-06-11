@@ -1,4 +1,3 @@
-import React from 'react'
 import { IoIosRefreshCircle } from 'react-icons/io'
 import Icon from './styled/Icon'
 
@@ -11,6 +10,7 @@ const updateNodes = (pendingChanges, dataSetter, service) => {
 export default function RefreshGraph({ service, pendingChanges, dataSetter }) {
     return (
         <Icon
+            large
             style={{ marginBottom: 10 }}
             tooltip="Re-create graph"
             component={IoIosRefreshCircle}

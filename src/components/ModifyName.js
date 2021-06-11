@@ -1,4 +1,3 @@
-import React from 'react'
 import { FaSave } from 'react-icons/fa'
 import Icon from './styled/Icon'
 

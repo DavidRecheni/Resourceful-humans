@@ -17,7 +17,7 @@ function NTMReducer(state, action) {
             return { ...state, newId: action.payload };
 
         case 'SET_NODE':
-            return { oldId: action.payload, newId: action.payload };
+            return { oldId: action.payload.id, newId: action.payload.id, group: action.payload.group };
 
         case 'ADD_PLANET':
             return { ...state, nodes: [{ id: action.payload, group: 2 }] };

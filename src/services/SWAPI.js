@@ -1,3 +1,4 @@
+
 export default class SWAPI {
 
     constructor(apiUrl) {
@@ -92,28 +93,18 @@ export default class SWAPI {
 
     updateNodes(pendingNodes, data) {
         if (pendingNodes.replace.length) {
-
-            let allNodes = data.nodes
-
-            let newNodes = pendingNodes.replace.map(n => {
-                return { ...n, index: data.nodes.findIndex(e => e.id === n.oldId) }
-            }).map(n => {
-                allNodes[n.index] = { ...allNodes[n.index], id: n.newId }
-                return allNodes[n.index]
-            })
-
             let modifiedLinks = data.links.map(link => {
                 pendingNodes.replace.forEach((pn, i) => {
                     if (pn.oldId === link.source.id) {
-                        link.source = newNodes[i]
+                        link.source.id = pn.newId
                     } else if (pn.oldId === link.target.id) {
-                        link.target = newNodes[i]
+                        link.target.id = pn.newId
                     }
                 })
                 return link
             })
 
-            return { nodes: [...allNodes, ...pendingNodes.nodes], links: [...modifiedLinks, ...pendingNodes.links] }
+            return { nodes: [...data.nodes, ...pendingNodes.nodes], links: [...modifiedLinks, ...pendingNodes.links] }
 
         } else return { nodes: [...data.nodes, ...pendingNodes.nodes], links: [...data.links, ...pendingNodes.links] }
     }
