@@ -11,63 +11,60 @@ import Graph from './Graph'
 const NTMInit = { nodes: [], links: [] }
 
 function NTMReducer(state, action) {
-    switch (action.type) {
+  switch (action.type) {
 
-        case 'NEW_NAME':
-            return { ...state, newId: action.payload };
+    case 'NEW_NAME':
+      return { ...state, newId: action.payload };
 
-        case 'SET_NODE':
-            return { oldId: action.payload.id, newId: action.payload.id, group: action.payload.group };
+    case 'SET_NODE':
+      return { oldId: action.payload.id, newId: action.payload.id, group: action.payload.group };
 
-        case 'ADD_PLANET':
-            return { ...state, nodes: [{ id: action.payload, group: 2 }] };
+    case 'ADD_PLANET':
+      return { ...state, nodes: [{ id: action.payload, group: 2 }] };
 
-        case 'RESET':
-            return NTMInit
+    case 'RESET':
+      return NTMInit
 
-        default:
-            throw new Error();
-    }
+    default:
+      throw new Error();
+  }
 }
 
 export default function Main({ service }) {
 
-    // Data
-    const [data, setData] = useState()
-    const [pendingChanges, setPendingChanges] = useState({ nodes: [], links: [], replace: [] })
+  // Data
+  const [data, setData] = useState()
+  const [pendingChanges, setPendingChanges] = useState({ nodes: [], links: [], replace: [] })
 
-    // Aux
-    const [nodeToModify, dispatchNodeToModify] = useReducer(NTMReducer, NTMInit);
+  // Aux
+  const [nodeToModify, dispatchNodeToModify] = useReducer(NTMReducer, NTMInit);
 
-    // Hooks -----------------------------------------------------------------------------------
+  // Hooks -----------------------------------------------------------------------------------
 
-    useEffect(() => {
-        service.getData(setData)
-    }, [service])
+  useEffect(() => {
+    service.getData(setData)
+  }, [service])
 
-    // Bloom effect -------------------------------------
+  return (
+    <Suspense fallback={<h1>Loading..</h1>}>
 
+      <Graph data={data} dispatchNTM={dispatchNodeToModify} />
 
-    return (
-        <Suspense fallback={<h1>Loading..</h1>}>
+      <ContainerInput bottom hCenter>
+        <ModifyName
+          node={[nodeToModify, dispatchNodeToModify]}
+          dispatchNTM={dispatchNodeToModify}
+          setter={setPendingChanges}
+        />
+      </ContainerInput>
 
-            <Graph data={data} dispatchNTM={dispatchNodeToModify} />
+      <ContainerInput bottom left>
+        <ContainerColumn>
+          <RefreshGraph service={service} pendingChanges={[pendingChanges, setPendingChanges]} dataSetter={setData} />
+          <AddElement setPendingChanges={setPendingChanges} />
+        </ContainerColumn>
+      </ContainerInput>
 
-            <ContainerInput bottom hCenter>
-                <ModifyName
-                    node={[nodeToModify, dispatchNodeToModify]}
-                    dispatchNTM={dispatchNodeToModify}
-                    setter={setPendingChanges}
-                />
-            </ContainerInput>
-
-            <ContainerInput bottom left>
-                <ContainerColumn>
-                    <RefreshGraph service={service} pendingChanges={[pendingChanges, setPendingChanges]} dataSetter={setData} />
-                    <AddElement setPendingChanges={setPendingChanges} />
-                </ContainerColumn>
-            </ContainerInput>
-
-        </Suspense>
-    )
+    </Suspense>
+  )
 }
